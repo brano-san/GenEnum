@@ -1,42 +1,52 @@
-﻿#ifndef GEN_ENUM_HPP
-#define GEN_ENUM_HPP
+﻿#ifndef GEN_ENUM_H
+#define GEN_ENUM_H
 
-#include <string_view>
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
+#include <string_view>
 #include <boost/preprocessor/tuple.hpp>
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/stringize.hpp>
 
 #define GENENUM_MACRO_DELIM(r, data, elem) BOOST_PP_STRINGIZE(elem) ,
+
+#if defined(GENENUM_USE_PREFIX_K)
 #define GENENUM_MACRO_CAT_K(elem) k##elem
+#else
+#define GENENUM_MACRO_CAT_K(elem) elem
+#endif
+
 #define GENENUM_MACRO_ENUM_DELIM(r, data, elem) GENENUM_MACRO_CAT_K(elem),
 
 #define GENENUM(enumSize, enumType, ...)                                                                         \
     using enumType = enumSize;                                                                                   \
     class enumType##s                                                                                            \
     {                                                                                                            \
+    public:                                                                                                      \
+        using baseType = enumType;                                                                               \
+                                                                                                                 \
     private:                                                                                                     \
         static constexpr const std::string_view kSourcesStringList[] = {                                         \
             BOOST_PP_SEQ_FOR_EACH(GENENUM_MACRO_DELIM, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))};                \
                                                                                                                  \
+        static constexpr baseType ElemCount = sizeof(kSourcesStringList) / sizeof(*kSourcesStringList);          \
+                                                                                                                 \
     public:                                                                                                      \
-        enumType##s()  = delete;                                                                                 \
-        using baseType = enumType;                                                                               \
+        enumType##s() = delete;                                                                                  \
         enum : baseType                                                                                          \
         {                                                                                                        \
             BOOST_PP_SEQ_FOR_EACH(GENENUM_MACRO_ENUM_DELIM, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))             \
         };                                                                                                       \
-        static constexpr baseType kCount = sizeof(kSourcesStringList) / sizeof(*kSourcesStringList);             \
+        static constexpr baseType GENENUM_MACRO_CAT_K(Count) = ElemCount;                                        \
                                                                                                                  \
         [[nodiscard]] static constexpr inline std::string_view to_string(enumType source) noexcept               \
         {                                                                                                        \
-            assert(source < kCount);                                                                             \
+            assert(source < ElemCount);                                                                          \
             return kSourcesStringList[source];                                                                   \
         }                                                                                                        \
         [[nodiscard]] static constexpr inline bool from_string(std::string_view source, enumType& type) noexcept \
         {                                                                                                        \
-            for (enumType i = 0; i < kCount; ++i)                                                                \
+            for (enumType i = 0; i < ElemCount; ++i)                                                             \
             {                                                                                                    \
                 if (kSourcesStringList[i] == source)                                                             \
                 {                                                                                                \
@@ -50,14 +60,13 @@
         [[nodiscard]] static constexpr size_t maxSourceStringLength() noexcept                                   \
         {                                                                                                        \
             uint64_t maxLength = 0;                                                                              \
-            auto maxFn         = [](uint64_t a, uint64_t b) { return (a < b) ? b : a; };                         \
-            for (enumType source = 0; source != kCount; ++source)                                                \
+            for (enumType source = 0; source != ElemCount; ++source)                                             \
             {                                                                                                    \
-                maxLength = maxFn(maxLength, to_string(source).size());                                          \
+                maxLength = std::max(maxLength, to_string(source).size());                                       \
             }                                                                                                    \
                                                                                                                  \
             return maxLength;                                                                                    \
         }                                                                                                        \
     }
 
-#endif
+#endif  // GEN_ENUM_H
