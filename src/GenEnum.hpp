@@ -1,5 +1,5 @@
-﻿#ifndef GEN_ENUM_H
-#define GEN_ENUM_H
+﻿#ifndef GEN_ENUM_HPP
+#define GEN_ENUM_HPP
 
 #include <cassert>
 #include <cstdint>
@@ -67,4 +67,4 @@
         }                                                                                                        \
     }
 
-#endif  // GEN_ENUM_H
+#endif  // GEN_ENUM_HPP
