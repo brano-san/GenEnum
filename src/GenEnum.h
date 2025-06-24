@@ -37,7 +37,11 @@
         {                                                                                                        \
             BOOST_PP_SEQ_FOR_EACH(GENENUM_MACRO_ENUM_DELIM, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))             \
         };                                                                                                       \
-        static constexpr baseType GENENUM_MACRO_CAT_K(Count) = ElemCount;                                        \
+                                                                                                                 \
+        [[nodiscard]] static constexpr inline baseType getSize() noexcept                                        \
+        {                                                                                                        \
+            return ElemCount;                                                                                    \
+        }                                                                                                        \
                                                                                                                  \
         [[nodiscard]] static constexpr inline std::string_view to_string(enumType source) noexcept               \
         {                                                                                                        \
