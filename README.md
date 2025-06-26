@@ -14,6 +14,10 @@
 * [Usage](#usage)
   * [Example](#example)
   * [Features](#features)
+    * [getSize](#1-getsize)
+    * [toString](#2-tostring)
+    * [fromString](#3-fromstring)
+    * [maxSourceStringLength](#4-maxsourcestringlength)
 * [License](#license)
 * [Authors](#authors)
 
