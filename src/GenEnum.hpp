@@ -2,8 +2,6 @@
 #define GEN_ENUM_HPP
 
 #include <cassert>
-#include <cstdint>
-#include <string_view>
 #include <boost/preprocessor/tuple.hpp>
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/stringize.hpp>
@@ -24,6 +22,8 @@
             BOOST_PP_SEQ_FOR_EACH(GENENUM_MACRO_DELIM, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))};               \
                                                                                                                 \
         static constexpr baseType ElemCount = sizeof(kSourcesStringList) / sizeof(*kSourcesStringList);         \
+                                                                                                                \
+        static constexpr std::string_view kEnumName = #enumType;                                                \
                                                                                                                 \
     public:                                                                                                     \
         enumType##s() = delete;                                                                                 \
@@ -64,6 +64,10 @@
             }                                                                                                   \
                                                                                                                 \
             return maxLength;                                                                                   \
+        }                                                                                                       \
+        [[nodiscard]] static constexpr std::string_view getEnumName()                                           \
+        {                                                                                                       \
+            return kEnumName;                                                                                   \
         }                                                                                                       \
     }
 
