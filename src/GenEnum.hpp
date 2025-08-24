@@ -1,5 +1,4 @@
-﻿#ifndef GEN_ENUM_HPP
-#define GEN_ENUM_HPP
+﻿#pragma once
 
 #include <cassert>
 #include <boost/preprocessor/tuple.hpp>
@@ -70,5 +69,3 @@
             return kEnumName;                                                                                   \
         }                                                                                                       \
     }
-
-#endif  // GEN_ENUM_HPP
