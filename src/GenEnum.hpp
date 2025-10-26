@@ -1,8 +1,8 @@
-﻿#ifndef GEN_ENUM_HPP
-#define GEN_ENUM_HPP
+﻿#pragma once
 
+#include <array>
 #include <cassert>
-#include <cstdint>
+#include <algorithm>
 #include <string_view>
 #include <boost/preprocessor/tuple.hpp>
 #include <boost/preprocessor/seq.hpp>
@@ -20,10 +20,12 @@
         using baseType = enumType;                                                                              \
                                                                                                                 \
     private:                                                                                                    \
-        static constexpr const std::string_view kSourcesStringList[] = {                                        \
+        static constexpr baseType kElemCount = BOOST_PP_VARIADIC_SIZE(__VA_ARGS__);                             \
+                                                                                                                \
+        static constexpr const std::array<std::string_view, kElemCount> kSourcesStringList = {                  \
             BOOST_PP_SEQ_FOR_EACH(GENENUM_MACRO_DELIM, _, BOOST_PP_TUPLE_TO_SEQ((__VA_ARGS__)))};               \
                                                                                                                 \
-        static constexpr baseType ElemCount = sizeof(kSourcesStringList) / sizeof(*kSourcesStringList);         \
+        static constexpr std::string_view kEnumName = #enumType;                                                \
                                                                                                                 \
     public:                                                                                                     \
         enumType##s() = delete;                                                                                 \
@@ -34,19 +36,19 @@
                                                                                                                 \
         [[nodiscard]] static constexpr inline baseType getSize() noexcept                                       \
         {                                                                                                       \
-            return ElemCount;                                                                                   \
+            return kElemCount;                                                                                  \
         }                                                                                                       \
                                                                                                                 \
         [[nodiscard]] static constexpr inline std::string_view toString(enumType source) noexcept               \
         {                                                                                                       \
-            assert(source < ElemCount);                                                                         \
-            return kSourcesStringList[source];                                                                  \
+            assert(source < kElemCount);                                                                        \
+            return kSourcesStringList.at(source);                                                               \
         }                                                                                                       \
         [[nodiscard]] static constexpr inline bool fromString(std::string_view source, enumType& type) noexcept \
         {                                                                                                       \
-            for (enumType i = 0; i < ElemCount; ++i)                                                            \
+            for (enumType i = 0; i < kElemCount; ++i)                                                           \
             {                                                                                                   \
-                if (kSourcesStringList[i] == source)                                                            \
+                if (kSourcesStringList.at(i) == source)                                                         \
                 {                                                                                               \
                     type = i;                                                                                   \
                     return true;                                                                                \
@@ -58,13 +60,15 @@
         [[nodiscard]] static constexpr size_t maxSourceStringLength() noexcept                                  \
         {                                                                                                       \
             uint64_t maxLength = 0;                                                                             \
-            for (enumType source = 0; source != ElemCount; ++source)                                            \
+            for (enumType source = 0; source != kElemCount; ++source)                                           \
             {                                                                                                   \
                 maxLength = std::max(maxLength, toString(source).size());                                       \
             }                                                                                                   \
                                                                                                                 \
             return maxLength;                                                                                   \
         }                                                                                                       \
+        [[nodiscard]] static constexpr std::string_view getEnumName()                                           \
+        {                                                                                                       \
+            return kEnumName;                                                                                   \
+        }                                                                                                       \
     }
-
-#endif  // GEN_ENUM_HPP
