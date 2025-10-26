@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cassert>
+#include <algorithm>
 #include <string_view>
 #include <boost/preprocessor/tuple.hpp>
 #include <boost/preprocessor/seq.hpp>
